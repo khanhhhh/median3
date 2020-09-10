@@ -3,6 +3,11 @@ import numpy as np
 
 libmedian = ctypes.cdll.LoadLibrary("./libmedian3filter.so")
 
+mapping = {
+    "float32": (np.float32, ctypes.c_float, libmedian.median3_filter_float),
+    "float64": (np.float64, ctypes.c_double, libmedian.median3_filter_double),
+}
+
 def median3_filter_1channel(im: np.ndarray) -> np.ndarray:
     # checking
     if len(im.shape) != 2:
@@ -13,12 +18,11 @@ def median3_filter_1channel(im: np.ndarray) -> np.ndarray:
 
     cdtype = None
     func = None
-    if im.dtype == np.float32:
-        cdtype = ctypes.c_float
-        func = libmedian.median3_filter_float
-    if im.dtype == np.float64:
-        cdtype = ctypes.c_double
-        func = libmedian.median3_filter_double
+    for npt, ct, f in mapping.values():
+        if npt == im.dtype:
+            cdtype = ct
+            func = f
+
     if cdtype is None:
         raise Exception("type error")
 

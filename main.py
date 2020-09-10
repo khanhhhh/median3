@@ -5,7 +5,7 @@ from scipy import ndimage
 
 from median import median3_filter
 
-im = np.random.random(size= (3, 800, 600)).astype(np.float32)
+im = np.random.random(size= (3, 800, 600)).astype(np.float64)
 
 t0 = time.time()
 median3_filter(im)
