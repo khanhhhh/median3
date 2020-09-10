@@ -58,6 +58,9 @@ extern "C" {
 void median3_filter_float(float* dst, const float* src, int64_t height, int64_t width) {
 	median3_filter<float, int64_t>(dst, src, height, width);
 }
+void median3_filter_double(double* dst, const double* src, int64_t height, int64_t width) {
+	median3_filter<double, int64_t>(dst, src, height, width);
+}
 }
 
 

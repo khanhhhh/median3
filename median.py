@@ -11,14 +11,23 @@ def median3_filter_1channel(im: np.ndarray) -> np.ndarray:
         im = np.ascontiguousarray(im)
     # end checking
 
-    filtered = np.ascontiguousarray(np.empty(shape=im.shape, dtype=im.dtype))
+    cdtype = None
+    func = None
     if im.dtype == np.float32:
-        filtered_ptr = filtered.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-        im_ptr = im.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-        libmedian.median3_filter_float(filtered_ptr, im_ptr, im.shape[0], im.shape[1])
-        return filtered
+        cdtype = ctypes.c_float
+        func = libmedian.median3_filter_float
+    if im.dtype == np.float64:
+        cdtype = ctypes.c_double
+        func = libmedian.median3_filter_double
+    if cdtype is None:
+        raise Exception("type error")
 
-    raise Exception("type error")
+    filtered = np.ascontiguousarray(np.empty(shape=im.shape, dtype=im.dtype))
+    filtered_ptr = filtered.ctypes.data_as(ctypes.POINTER(cdtype))
+    im_ptr = im.ctypes.data_as(ctypes.POINTER(cdtype))
+    func(filtered_ptr, im_ptr, im.shape[0], im.shape[1])
+    return filtered
+
 
 def median3_filter(im: np.ndarray) -> np.ndarray:
     # checking
